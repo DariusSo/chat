@@ -34,7 +34,7 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception{
         http.authorizeHttpRequests(configurer ->
                 configurer
-                        .requestMatchers(HttpMethod.GET, "/products").hasRole("USER")
+                        .requestMatchers(HttpMethod.POST, "/users").anonymous()
 //                        .requestMatchers(HttpMethod.GET, "/products/**").anonymous()
 //                        .requestMatchers(HttpMethod.GET, "/products/category/**").anonymous()
 //                        .requestMatchers(HttpMethod.GET, "/categories/get").anonymous()
