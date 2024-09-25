@@ -82,6 +82,10 @@ public class SecurityConfig {
                         configurer
                                 .requestMatchers(HttpMethod.POST, "/users").anonymous()
                                 .requestMatchers(HttpMethod.POST, "/users/login").anonymous()
+                                .requestMatchers(HttpMethod.POST, "/messages").anonymous()
+                                .requestMatchers(HttpMethod.GET, "/messages").anonymous()
+                                .requestMatchers(HttpMethod.POST, "/messages/chatroom").anonymous()
+                                .requestMatchers(HttpMethod.GET, "/users/user-id").anonymous()
 
 
                 )       .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()))
