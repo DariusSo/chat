@@ -21,8 +21,8 @@ public class Message {
     private int id;
     @Column(name="chatroom")
     private String chatroom;
-    @Column(name="user_id")
-    private long userId;
+    @Column(name="username")
+    private String username;
     @Column(name="content")
     private String content;
     @Column(name="sent_at")
@@ -30,4 +30,11 @@ public class Message {
     @Column(name="type")
     private String type;
 
+    public Message(String chatroom, String username, String content, LocalDateTime sentAt, String type) {
+        this.chatroom = chatroom;
+        this.username = username;
+        this.content = content;
+        this.sentAt = sentAt;
+        this.type = type;
+    }
 }
