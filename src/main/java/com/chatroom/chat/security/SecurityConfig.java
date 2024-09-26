@@ -83,7 +83,7 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/users").anonymous()
                                 .requestMatchers(HttpMethod.POST, "/users/login").anonymous()
                                 .requestMatchers(HttpMethod.POST, "/messages").anonymous()
-                                .requestMatchers(HttpMethod.GET, "/messages").anonymous()
+                                .requestMatchers(HttpMethod.GET, "/messages").hasAnyAuthority("SCOPE_ROLE_USER", "ROLE_USER")
                                 .requestMatchers(HttpMethod.POST, "/messages/chatroom").anonymous()
                                 .requestMatchers(HttpMethod.GET, "/users/user-id").anonymous()
 
