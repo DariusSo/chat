@@ -25,7 +25,7 @@ public class MessageController {
         messageService.saveMessage(message);
     }
     @CrossOrigin
-    @PostMapping("/chatroom")
+    @GetMapping("/chatroom")
     public List<Message> findByChatroom(String chatroom){
         return messageService.findByChatroom(chatroom);
     }

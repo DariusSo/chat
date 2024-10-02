@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +22,7 @@ public class MessageService {
     }
 
     public void saveMessage(Message message){
-        message.setSentAt(LocalDateTime.now());
+        message.setSentAt(LocalTime.now());
         messageRepository.save(message);
     }
     public List<Message> findByChatroom(String chatroom){

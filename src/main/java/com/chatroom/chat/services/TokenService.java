@@ -30,7 +30,7 @@ public class TokenService {
                 .issuer("self")
                 .issuedAt(now)
                 .expiresAt(now.plus(1, ChronoUnit.HOURS))
-                .subject(authentication.getName())
+                .subject("self")
                 .claim("scope", scope)
                 .claim("UserId", userId)
                 .build();

@@ -18,11 +18,14 @@ import org.springframework.web.util.HtmlUtils;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class ChatController {
-    public List<String> connectedUsers;
+    public List<String> connectedUsers = new ArrayList<>();
 
     private final SimpMessagingTemplate messagingTemplate;
     private final UserService userService;
@@ -39,16 +42,18 @@ public class ChatController {
     @SendTo("/topic/chatroom")
     public Message chatMessage(Message message) throws Exception {
 
-        LocalDateTime time = LocalDateTime.now();
+        LocalTime time = LocalTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-        LocalDateTime now = LocalDateTime.parse(time.format(formatter));
+        LocalTime now = LocalTime.parse(time.format(formatter));
         message.setSentAt(now);
-        addUserToList(message.getUsername());
+        messageService.saveMessage(message);
+        addUserToList(message.getUsername(), message.getChatroom());
+
 
         return new Message(HtmlUtils.htmlEscape(message.getChatroom()),
                 HtmlUtils.htmlEscape(message.getUsername()),
                 HtmlUtils.htmlEscape(String.valueOf(message.getContent())),
-                LocalDateTime.parse(HtmlUtils.htmlEscape(String.valueOf(message.getSentAt()))),
+                LocalTime.parse(HtmlUtils.htmlEscape(String.valueOf(message.getSentAt()))),
                 HtmlUtils.htmlEscape(message.getType()));
     }
 
@@ -56,28 +61,45 @@ public class ChatController {
     @SendTo("/topic/usersList")
     public List<String> getChatUsersList(){
         //String json = new Gson().toJson(chatUsersList);
+//        Map<String, String> connectedToChatroom = new HashMap<>();
+//        for(Map.Entry<String, String> entry : connectedUsers.entrySet()){
+//            if(entry.getValue().equals(chatroom)){
+//                connectedToChatroom.put(entry.getKey(), entry.getValue());
+//            }
+//        }
         return connectedUsers;
     }
 
-    public void addUserToList(String name){
+    public void addUserToList(String name, String chatroom){
         if(!connectedUsers.contains(name)){
             connectedUsers.add(name);
         }
+//        connectedUsers.put(name, chatroom);
     }
     @MessageMapping("/leave")
-    public void removeUser(String name) throws JsonProcessingException {
+    @SendTo("/topic/usersList")
+    public List<String> removeUser(String name) throws JsonProcessingException {
         String remove = null;
         ObjectMapper mapper = new ObjectMapper();
         JsonNode jsonName = mapper.readTree(name);
-        String user = jsonName.get("name").asText();
-        for(String listName : connectedUsers){
-            if(listName.equals(user)){
-                remove = listName;
-            }
-        }
-        if(remove != null){
-           connectedUsers.remove(remove);
-        }
+        String user = jsonName.get("username").asText();
+        connectedUsers.remove(name);
+//        for(String listName : connectedUsers){
+//            if(listName.equals(user)){
+//                remove = listName;
+//            }
+//        }
+//        if(remove != null){
+//           connectedUsers.remove(remove);
+//        }
+//        connectedUsers.remove(name);
+//        Map<String, String> connectedToChatroom = new HashMap<>();
+//        for(Map.Entry<String, String> entry : connectedUsers.entrySet()){
+//            if(entry.getValue().equals(chatroom)){
+//                connectedToChatroom.put(entry.getKey(), entry.getValue());
+//            }
+//        }
+        return connectedUsers;
     }
     @MessageMapping("/messageList")
     @SendTo("/topic/messageList")

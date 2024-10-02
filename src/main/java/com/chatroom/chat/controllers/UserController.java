@@ -1,6 +1,7 @@
 package com.chatroom.chat.controllers;
 
 import com.chatroom.chat.entities.User;
+import com.chatroom.chat.exceptions.UserNotFoundException;
 import com.chatroom.chat.services.TokenService;
 import com.chatroom.chat.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,16 +31,26 @@ public class UserController {
     public void registerNewUser(@RequestBody User user){
         userService.registerNewUser(user);
     }
+
     @PostMapping("/login")
     public String login(@RequestBody User user){
         int userId = userService.findByUsername(user.getUsername()).getId();
+        if (userId == 0){
+            throw new UserNotFoundException("User was not found");
+        }
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
         String token = tokenService.getToken(authentication, userId);
         return token;
     }
-    @GetMapping("/user-id")
-    public long getUserId(String token){
-        return tokenService.decodeUserId(token);
+//    @GetMapping("/user-id")
+//    public int getUserId(String token){
+//        int id =
+//        return tokenService.decodeUserId(token);
+//    }
+    @GetMapping("/byId")
+    public String getById(@RequestHeader("Authorization") String token){
+        long id = tokenService.decodeUserId(token);
+        return userService.findById(id).getUsername();
     }
 
 

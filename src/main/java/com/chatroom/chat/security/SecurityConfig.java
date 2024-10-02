@@ -15,6 +15,7 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -84,12 +85,27 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/users/login").anonymous()
                                 .requestMatchers(HttpMethod.POST, "/messages").anonymous()
                                 .requestMatchers(HttpMethod.GET, "/messages").hasAnyAuthority("SCOPE_ROLE_USER", "ROLE_USER")
-                                .requestMatchers(HttpMethod.POST, "/messages/chatroom").anonymous()
+                                .requestMatchers(HttpMethod.GET, "/messages/chatroom").hasAnyAuthority("SCOPE_ROLE_USER", "ROLE_USER")
                                 .requestMatchers(HttpMethod.GET, "/users/user-id").anonymous()
+                                .requestMatchers(HttpMethod.GET, "/users/byId").anonymous()
+                                .requestMatchers("/websocket/**").anonymous()
+                                .requestMatchers("/app/**").anonymous()
+                                .requestMatchers("/app/chat/**").anonymous()
+                                .requestMatchers("/app/chat").anonymous()
+                                .requestMatchers("/topic/**").anonymous()
 
 
-                )       .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()))
-                .userDetailsService(jpaUserDetailsService);
+
+
+
+
+
+                )
+                //.httpBasic(Customizer.withDefaults())
+                .oauth2ResourceServer((oauth2) -> oauth2.jwt(Customizer.withDefaults()))
+                .userDetailsService(jpaUserDetailsService)
+        ;
+
 
         http.csrf((csrf -> csrf.disable()));
         http.cors(Customizer.withDefaults());
@@ -106,16 +122,19 @@ public class SecurityConfig {
         JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
         return new NimbusJwtEncoder(jwks);
     }
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("*"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
-
+//    @Bean
+//    CorsConfigurationSource corsConfigurationSource() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.setAllowedOrigins(Arrays.asList("*"));
+//        configuration.setAllowedMethods(Arrays.asList("*"));
+//        configuration.setAllowedHeaders(Arrays.asList("*"));
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration);
+//        return source;
+//    }
+@Bean
+public ChannelInterceptor csrfChannelInterceptor() {
+    return new ChannelInterceptor() {};
+}
 
 }
